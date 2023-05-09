@@ -195,4 +195,37 @@ public class FileExist {
 		
 		return afile;
 	}
+	public static Map<Faculty, Batch> FB() {
+		// TODO Auto-generated method stub
+		Map<Faculty,Batch> afile=null;
+		File f=new File("FB.ser");
+		boolean flag=false;
+		try {
+			if(!f.exists()) {
+				f.createNewFile();
+				flag=true;
+			}
+			if(flag) {
+				afile=new HashMap<Faculty,Batch>();
+				ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(f));
+				oos.writeObject(afile);
+			
+				return afile;
+			}
+			if(flag==false){
+				
+				ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
+				
+                afile=(Map<Faculty,Batch>)ois.readObject();
+                
+           
+                return afile;
+			}
+		}catch(IOException | ClassNotFoundException e) {
+		
+			System.out.println(e.getMessage());
+		}
+		
+		return afile;
+	}
 }

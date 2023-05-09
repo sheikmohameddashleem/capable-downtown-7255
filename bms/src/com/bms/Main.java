@@ -2,6 +2,7 @@ package com.bms;
 
 import java.io.*;
 import java.util.*;
+import java.util.Map.Entry;
 
 public class Main {
 
@@ -12,20 +13,22 @@ public class Main {
 		Map<Integer, Faculty> Faculties = FileExist.faculty();
 		Map<Integer, Batch> alloted = FileExist.allotment();
 		Map<Integer, Integer> bf = FileExist.bf();
+		Map<Faculty, Batch> FB = FileExist.FB();
 		Scanner sc = new Scanner(System.in);
-
-		System.out.println("Welcome to Anna University Batch monitoring system");
-
+		System.out.println("                                                      ======================================================");
+		System.out.println("                                                        Welcome to Anna University Batch monitoring system");
+		System.out.println("                                                      ======================================================");
 		try {
 			int preference = 0;
 			do {
-				System.out.println(
-						"please Enter preference Admin Login(1) ,Faculty Login(2),Faculty Register(3) or Exit(0)");
+				System.out.println("                        ==============  ================ ===================    =======");
+				System.out.println("please Enter preference Admin Login|1  ,Faculty Login|2 ,Faculty Register|3  or Exit|0 ");
+				System.out.println("                        ==============  ================ ===================    =======");
 				preference = sc.nextInt();
 
 				switch (preference) {
 				case 1:
-					AdminFunctionality(sc, batches, Faculties, alloted, batchId, FacultyId, bf);
+					AdminFunctionality(sc, batches, Faculties, alloted, batchId, FacultyId, bf, FB);
 					break;
 				case 2:
 					FacultyFunctionality(sc, alloted, FacultyId, Faculties, bf);
@@ -34,7 +37,7 @@ public class Main {
 					FacultyRegister(sc, Faculties, FacultyId);
 					break;
 				case 0:
-					System.out.println("Successfully Exited the System.");
+					System.out.println("*|Successfully Exited the System|*");
 					break;
 
 				default:
@@ -49,29 +52,33 @@ public class Main {
 			try {
 				ObjectOutputStream bId = new ObjectOutputStream(new FileOutputStream("bid.ser"));
 				bId.writeObject(batchId);
-				bId.close();
+				
 				ObjectOutputStream fId = new ObjectOutputStream(new FileOutputStream("fid.ser"));
 				fId.writeObject(FacultyId);
-				fId.close();
+			
 				ObjectOutputStream btch = new ObjectOutputStream(new FileOutputStream("btch.ser"));
 				btch.writeObject(batches);
-				btch.close();
+			
 				ObjectOutputStream Fact = new ObjectOutputStream(new FileOutputStream("Fact.ser"));
 				Fact.writeObject(Faculties);
-				Fact.close();
+			
 				ObjectOutputStream alot = new ObjectOutputStream(new FileOutputStream("alot.ser"));
 				alot.writeObject(alloted);
-				Fact.close();
+
+				ObjectOutputStream FBo = new ObjectOutputStream(new FileOutputStream("FB.ser"));
+				FBo.writeObject(alloted);
+				
 			} catch (Exception e) {
 				System.out.println(e.getMessage());
 			}
 		}
 
 	}
-
+    
 	private static void FacultyRegister(Scanner sc, Map<Integer, Faculty> faculties, List<Faculty> facultyId) {
 		// TODO Auto-generated method stub
 		System.out.println("Welcome to Faculty Registration");
+		System.out.println("-------------------------------");
 		System.out.println("Enter Your name");
 		String name = sc.next();
 		System.out.println("Enter Your Username");
@@ -96,6 +103,7 @@ public class Main {
 				System.out.println("What would you like to perform");
 				System.out.println("1 look over the batches assigned");
 				System.out.println("2 delete my account");
+				System.out.println("3 exit");
 				preference = sc.nextInt();
 				switch (preference) {
 				case 1:
@@ -111,7 +119,7 @@ public class Main {
 
 			} while (preference != 0);
 		} catch (Exception e) {
-			e.getMessage();
+			System.out.println(e.getMessage());
 		}
 
 	}
@@ -119,22 +127,40 @@ public class Main {
 	private static void BatchesAssigned(int id, Map<Integer, Batch> alloted) {
 		// TODO Auto-generated method stub
 		Batch alot = alloted.get(id);
-		System.out.println(alot.toString());
+		if(alot!=null) {
+			System.out.println(alot.getCourseName()+" "+alot.getBatchID());
+		}
+		else {
+			System.out.println("Not assigned yet");
+		}
+		
 	}
 
 	private static void DeleteAccount(int id, Map<Integer, Batch> alloted, List<Faculty> facultyId,
-			Map<Integer, Faculty> faculties) {
+			Map<Integer, Faculty> faculties) throws InvalidDataException {
 		// TODO Auto-generated method stub
 		alloted.remove(id);
 		faculties.remove(id);
-		System.out.println("Account deleted Successfully");
+		int a=0;
+		int ans=0;
+	    for(Faculty i:facultyId) {
+	    	
+	    	if(i.getFacultyId()==id) {
+	    		ans=a;
+	    	}
+	    	a++;
+	    }
+	    facultyId.remove(ans);
+	    throw new InvalidDataException("Account deleted Successfully");
+//		System.out.println("Account deleted Successfully");
 	}
 
 	private static int facultyLogin(Scanner sc, List<Faculty> facultyId, Map<Integer, Faculty> faculties)
 			throws InvalidDataException {
 		// TODO Auto-generated method stub
-		System.out.println(faculties.toString());
+//		System.out.println(facultyId.toString());
 		System.out.println("Welcome to Faculty login panel");
+		
 		System.out.println("Enter Your FacultyId");
 		int fId = sc.nextInt();
 		System.out.println("Enter your Username");
@@ -153,8 +179,8 @@ public class Main {
 	}
 
 	private static void AdminFunctionality(Scanner sc, Map<Integer, Batch> batches, Map<Integer, Faculty> faculties,
-			Map<Integer, Batch> allotted, List<Batch> batchId, List<Faculty> facultyId, Map<Integer, Integer> bf)
-			throws InvalidDataException {
+			Map<Integer, Batch> allotted, List<Batch> batchId, List<Faculty> facultyId, Map<Integer, Integer> bf,
+			Map<Faculty, Batch> fB) throws InvalidDataException {
 		// TODO Auto-generated method stub
 
 		Adminlogin(sc);
@@ -182,10 +208,10 @@ public class Main {
 					updateBatch(sc, batches, batchId, bf, allotted);
 					break;
 				case 3:
-					assignFaculty(sc, batches, allotted, bf);
+					assignFaculty(sc, batches, allotted, bf, batchId, fB, facultyId);
 					break;
 				case 4:
-					viewBatchByFaculty(sc, allotted);
+					viewBatchByFaculty(sc, allotted, facultyId, fB);
 					break;
 				case 5:
 					viewBatchByBatchId(sc, batches);
@@ -194,7 +220,7 @@ public class Main {
 					viewAllBatch(batchId);
 					break;
 				case 7:
-					deleteBatch(sc,batches,allotted,bf,batchId);
+					deleteBatch(sc, batches, allotted, bf, batchId);
 					break;
 				case 8:
 					System.out.println("Admin successfully logged out");
@@ -225,25 +251,34 @@ public class Main {
 		}
 	}
 
-	private static void deleteBatch(Scanner sc, Map<Integer, Batch> batches, Map<Integer, Batch> allotted, Map<Integer, Integer> bf, List<Batch> batchId) {
+	private static void deleteBatch(Scanner sc, Map<Integer, Batch> batches, Map<Integer, Batch> allotted,
+			Map<Integer, Integer> bf, List<Batch> batchId) {
 		// TODO Auto-generated method stub
 		System.out.println("Please Enter the Batch ID");
-		int batch=sc.nextInt();
-        batches.remove(batch);
-        int fac=bf.get(batch);
-        allotted.put(fac, null);
-        bf.remove(batch);
-        for(Batch i:batchId) {
-        	if(i.getBatchID() == batch) {
-        		batchId.remove(i);
-        	}
-        }
-        System.out.println("Successfully removed the batch");
+		for(Batch i:batchId) {
+			System.out.println(i.getBatchID()+" "+i.getCourseName());
+		}
+		int batch = sc.nextInt();
+		batches.remove(batch);
+		int fac = bf.get(batch);
+		allotted.put(fac, null);
+		bf.remove(batch);
+		for (Batch i : batchId) {
+			if (i.getBatchID() == batch) {
+				batchId.remove(i);
+			}
+		}
+		System.out.println("Successfully removed the batch");
 	}
 
 	private static void viewAllBatch(List<Batch> batchId) {
 		// TODO Auto-generated method stub
-		System.out.println(batchId.toString());
+		System.out.println("Name"+"           "+"Seats"+"           "+"Duration"+"           "+"StartDate");
+		for (Batch i : batchId) {
+			System.out.println(
+					i.getCourseName() + "           " + i.getSeats() + "           " + i.getDuration() + "           " + i.getStartDate());
+		}
+//		System.out.println(batchId.toString());
 	}
 
 	private static void viewBatchByBatchId(Scanner sc, Map<Integer, Batch> batches) {
@@ -251,28 +286,46 @@ public class Main {
 		System.out.println("Enter the respective Batch id to view Batch");
 		int n = sc.nextInt();
 		Batch a = batches.get(n);
-		System.out.println(a.toString());
+		System.out.println("BatchId"+"               "+"course"+"               "+"duration"+"               "+"Seats"+"               "+"StartDate");
+		System.out.println(a.getBatchID()+"               "+a.getCourseName()+"               "+a.getDuration()+"               "+a.getSeats()+"        "+a.getStartDate());
 	}
 
-	private static void viewBatchByFaculty(Scanner sc, Map<Integer, Batch> allotted) {
+	private static void viewBatchByFaculty(Scanner sc, Map<Integer, Batch> allotted, List<Faculty> facultyId,
+			Map<Faculty, Batch> fB) {
 		// TODO Auto-generated method stub
-		System.out.println("Enter the respective faculty id to view Batches");
-		int n = sc.nextInt();
-		Batch a = allotted.get(n);
-		System.out.println(a.toString());
+		System.out.println("FacultyName"+"            "+"CourseName");
+		for (Entry<Faculty, Batch> i : fB.entrySet()) {
+			Faculty Faculty = i.getKey();
+			Batch course = i.getValue();
+
+			System.out.println(Faculty.getName() + "                  " + course.getCourseName());
+		}
 
 	}
 
 	private static void assignFaculty(Scanner sc, Map<Integer, Batch> batches, Map<Integer, Batch> allotted,
-			Map<Integer, Integer> bf) {
+			Map<Integer, Integer> bf, List<Batch> batchId2, Map<Faculty, Batch> fB, List<Faculty> facultyId) {
 		// TODO Auto-generated method stub
 		System.out.println("Enter the faculty Id to assign");
+		for(Faculty i:facultyId) {
+			System.out.println(i.getFacultyId()+"-->"+i.getName());
+		}
 		int fac = sc.nextInt();
 		System.out.println("Enter the Batch Id to be assigned");
+		for (Batch i : batchId2) {
+
+			System.out.println(i.getBatchID() +"-->"+ i.getCourseName());
+		}
 		int batchId = sc.nextInt();
 		Batch a = batches.get(batchId);
 		allotted.put(fac, a);
 		bf.put(batchId, fac);
+		for (Faculty j : facultyId) {
+			if (j.getFacultyId() == fac) {
+				fB.put(j, a);
+			}
+		}
+
 		System.out.println("Faculty assigned to the batch");
 	}
 
@@ -372,8 +425,9 @@ public class Main {
 		Batch batch = new Batch(batchID, course, seats, start, duration);
 		batchId2.add(batch);
 		batches.put(batchID, batch);
-		System.out.println(batches.toString() + " " + batchId2.toString());
+//		System.out.println(batches.toString() + " " + batchId2.toString());
 
 		System.out.println("Added Successfully");
+		System.out.println();
 	}
 }
