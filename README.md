@@ -1,4 +1,4 @@
-# capable-downtown-7255
+# Batch Management System.
 Introduction
 The Batch Management System is a software application designed to manage and organize batches for educational institutes. This system has two sections: Admin section and Faculty section. The Admin section is responsible for creating, editing, and deleting batches, assigning batches to faculties, and managing faculty details. The Faculty section is responsible for registering, logging in, and viewing the batches assigned to them.
 
@@ -29,7 +29,7 @@ Login: This feature allows the faculty to login to the system using their email 
 View batches assigned to them: This feature allows the faculty to view the details of the batches assigned to them.
 
 Data Storage
-The data in the Batch Management System is stored in a file structure using serialization and deserialization. When the system is started, the data is read from the file and stored in the memory. Whenever there is a change in the data, it is written back to the file.
+The data in the Batch Management System is stored in a file structure using serialization and deserialization. When the system is started, the data is read from the file and stored in the memory. Whenever there is a change in the data, it is written back to the file. The data is stored in a collection framework to make it easy to retrieve and manipulate.
 
 Conclusion
-The Batch Management System is a powerful tool for educational institutes to manage their batches and faculties. The system is designed using OOPs concepts and stores data in a file structure using serialization and deserialization. The Admin section allows creating, editing, and deleting batches, assigning batches to faculties, and managing faculty details. The Faculty section allows registering, logging in, and viewing the batches assigned to them.
+The Batch Management System is a powerful tool for educational institutes to manage their batches and faculties. The system is designed using OOPs concepts and stores data in a file structure using serialization and deserialization. The Admin section allows creating, editing, and deleting batches, assigning batches to faculties, and managing faculty details. The Faculty section allows registering, logging in, and viewing the batches assigned to them. The data is stored in a collection framework to make it easy to retrieve and manipulate.
